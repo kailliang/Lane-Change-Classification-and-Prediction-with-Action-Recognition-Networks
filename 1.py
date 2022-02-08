@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import torch
 from pytorchvideo.data import make_clip_sampler, labeled_video_dataset
-#from pytorchvideo.models import create_slowfast
+from pytorchvideo.models import create_slowfast
 from torch.backends import cudnn
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam, SGD
@@ -32,10 +32,10 @@ frames_per_second = 32/6
 clip_duration = (num_frames * sampling_rate) / frames_per_second
 num_classes = 3
 
-data_root = "/kaggle/input/prevention/all"
-batch_size = 10
+data_root = "/home/k/kai/data/all"
+batch_size = 8
 epochs = 50
-save_root = '/kaggle/working/CheckPoints/X3D_1'
+save_root = '/home/k/kai/CheckPoints/x3d_1'
 
 # for reproducibility
 random.seed(1)
@@ -110,8 +110,8 @@ def val(model, data_loader):
             pred = model(video)
             
             #print(pred.argmax(dim=-1).cpu())
-            #pred_result.extend(pred.argmax(dim=-1).cpu())
-            #ground_truth.extend(label.cpu())
+            pred_result.extend(pred.argmax(dim=-1).cpu())
+            ground_truth.extend(label.cpu())
             #print(label)
 
             
@@ -173,8 +173,10 @@ optimizer = SGD(model.parameters(), lr=0.02, momentum=0.9, weight_decay=0.001)
 #                 lr=0.0001,momentum=0.9,weight_decay=0.0001)
 
 
-#------------------------------------------------------------------------------------------------------------
 
+#print(optimizer)
+
+##---------------------------------------------------------------------------------------------------------
 
 # training loop
 results = {'loss': [], 'acc': [], 'top-1': [], 'top-5': []}
