@@ -33,7 +33,7 @@ clip_duration = (num_frames * sampling_rate) / frames_per_second
 num_classes = 3
 
 data_root = "/home/k/kai/data/all"
-batch_size = 8
+batch_size = 6
 epochs = 50
 save_root = '/home/k/kai/CheckPoints/x3d_1'
 
@@ -64,6 +64,7 @@ train_transform = ApplyTransformToKey(key="video", transform=Compose(
 
 test_transform = ApplyTransformToKey(key="video", transform=Compose(
     [UniformTemporalSubsample(num_frames), Lambda(lambda x: x / 255.0), Normalize(mean, std), ShortSideScale(size=side_size), PackPathway()]))
+
 
 
 
@@ -144,8 +145,8 @@ train_data = labeled_video_dataset('{}/train'.format(data_root), make_clip_sampl
 test_data = labeled_video_dataset('{}/test'.format(data_root),
                                   make_clip_sampler('constant_clips_per_video', clip_duration, 1),
                                   transform=test_transform, decode_audio=False)
-train_loader = DataLoader(train_data, batch_size=batch_size, num_workers=24)
-test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=24)
+train_loader = DataLoader(train_data, batch_size=batch_size, num_workers=8)
+test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=8)
 
 
 #------------------------------------------------------------------------------------------------------------
@@ -165,18 +166,7 @@ model.blocks[5].proj = torch.nn.Linear(in_features=2048, out_features=3, bias=Tr
 
 loss_criterion = CrossEntropyLoss()
 # optimizer = Adam(slow_fast.parameters(), lr=1e-1)
-optimizer = SGD(model.parameters(), lr=0.02, momentum=0.9, weight_decay=0.001)
-# optimizer = SGD([{'params':slow_fast.blocks[0:6].parameters(),'lr':0.0001},
-#                  {'params':slow_fast.blocks[6].dropout.parameters(),'lr':0.0001},
-#                  {'params':slow_fast.blocks[6].proj.parameters(),'lr':0.001},
-#                  {'params':slow_fast.blocks[6].output_pool.parameters(),'lr':0.0001}], 
-#                 lr=0.0001,momentum=0.9,weight_decay=0.0001)
-
-
-
-#print(optimizer)
-
-##---------------------------------------------------------------------------------------------------------
+optimizer = SGD(model.parameters(), lr=0.01, momentum=0.9, weight_decay=0.001)
 
 # training loop
 results = {'loss': [], 'acc': [], 'top-1': [], 'top-5': []}
