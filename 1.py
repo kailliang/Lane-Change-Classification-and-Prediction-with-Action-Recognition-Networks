@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import torch
 from pytorchvideo.data import make_clip_sampler, labeled_video_dataset
-from pytorchvideo.models import create_slowfast
+#from pytorchvideo.models import create_slowfast
 from torch.backends import cudnn
 from torch.nn import CrossEntropyLoss
 from torch.optim import Adam, SGD
