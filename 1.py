@@ -91,6 +91,9 @@ def train(model, data_loader, train_optimizer):
         total_num += video[0].size(0)
         train_bar.set_description('Train Epoch: [{}/{}] Loss: {:.4f} Acc: {:.2f}%'
                                   .format(epoch, epochs, total_loss / total_num, total_acc * 100 / total_num))
+        
+        print(total_acc, total_num, total_acc * 100 / total_num)
+        
 
     return total_loss / total_num, total_acc / total_num
 
