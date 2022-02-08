@@ -110,8 +110,8 @@ def val(model, data_loader):
             pred = model(video)
             
             #print(pred.argmax(dim=-1).cpu())
-            pred_result.extend(pred.argmax(dim=-1).cpu())
-            ground_truth.extend(label.cpu())
+            #pred_result.extend(pred.argmax(dim=-1).cpu())
+            #ground_truth.extend(label.cpu())
             #print(label)
 
             
