@@ -33,9 +33,9 @@ clip_duration = (num_frames * sampling_rate) / frames_per_second
 num_classes = 3
 
 data_root = "/kaggle/input/prevention/all"
-batch_size = 2
-epochs = 1
-save_root = '/kaggle/working/CheckPoints/Batch_2_sgd_lr001'
+batch_size = 10
+epochs = 50
+save_root = '/kaggle/working/CheckPoints/X3D_1'
 
 # for reproducibility
 random.seed(1)
@@ -51,10 +51,6 @@ class PackPathway(nn.Module):
     """
     Transform for converting video frames as a list of tensors.
     """
-
-    def __init__(self, alpha=4):
-        super().__init__()
-        self.alpha = alpha
 
     def forward(self, frames):
         frame_list = frames
@@ -148,8 +144,8 @@ train_data = labeled_video_dataset('{}/train'.format(data_root), make_clip_sampl
 test_data = labeled_video_dataset('{}/test'.format(data_root),
                                   make_clip_sampler('constant_clips_per_video', clip_duration, 1),
                                   transform=test_transform, decode_audio=False)
-train_loader = DataLoader(train_data, batch_size=batch_size, num_workers=8)
-test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=8)
+train_loader = DataLoader(train_data, batch_size=batch_size, num_workers=24)
+test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=24)
 
 
 #------------------------------------------------------------------------------------------------------------
@@ -160,7 +156,7 @@ model_name = 'x3d_m'
 model = torch.hub.load('facebookresearch/pytorchvideo:main', model_name, pretrained=True).cuda()
 
 
-#model.blocks[6].proj = torch.nn.Linear(in_features=2304, out_features=3, bias=True).cuda()
+model.blocks[5].proj = torch.nn.Linear(in_features=2048, out_features=3, bias=True).cuda()
 
 #model.load_state_dict(torch.load('/kaggle/input/pretrained-weight/Batch_10_02.pth', 'cuda'))
 
@@ -169,7 +165,16 @@ model = torch.hub.load('facebookresearch/pytorchvideo:main', model_name, pretrai
 
 loss_criterion = CrossEntropyLoss()
 # optimizer = Adam(slow_fast.parameters(), lr=1e-1)
-optimizer = SGD(model.parameters(), lr=0.001, momentum=0.9)
+optimizer = SGD(model.parameters(), lr=0.02, momentum=0.9, weight_decay=0.001)
+# optimizer = SGD([{'params':slow_fast.blocks[0:6].parameters(),'lr':0.0001},
+#                  {'params':slow_fast.blocks[6].dropout.parameters(),'lr':0.0001},
+#                  {'params':slow_fast.blocks[6].proj.parameters(),'lr':0.001},
+#                  {'params':slow_fast.blocks[6].output_pool.parameters(),'lr':0.0001}], 
+#                 lr=0.0001,momentum=0.9,weight_decay=0.0001)
+
+
+#------------------------------------------------------------------------------------------------------------
+
 
 # training loop
 results = {'loss': [], 'acc': [], 'top-1': [], 'top-5': []}
