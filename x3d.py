@@ -2,7 +2,6 @@ import argparse
 import math
 import os
 import random
-
 import numpy as np
 import pandas as pd
 import torch
@@ -13,9 +12,6 @@ from torch.nn import CrossEntropyLoss
 from torch.optim import Adam, SGD
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-
-#from utils import train_transform, test_transform, clip_duration, num_classes
-
 from pytorchvideo.transforms import ApplyTransformToKey, UniformTemporalSubsample, RandomShortSideScale, \
     ShortSideScale, Normalize
 from torch import nn
